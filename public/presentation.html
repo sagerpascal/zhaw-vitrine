@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="manifest.json"/>
 
     <!-- CLEAN MARKUP = GOOD KARMA.
       Hi source code lover,
@@ -302,13 +302,47 @@
             </div>
         </section>
 
+        <section class="bg-white">
+            <div class="wrap">
+                <div class="grid">
+                    <div class="column">
+                        <h3>Gesture Control</h3>
+                        <p>Open and close your hand to navigate between pages.</p>
+                        <figure>
+                            <img src="webslides/static/images/hand.jpeg" alt="hand gestures">
+                        </figure>
+                    </div>
+                    <div class="column content-center">
+                        <canvas id="canvas" class="border canvasbox" style="margin: auto"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <video class="videobox canvasbox" autoplay="autoplay" id="myvideo" style="visibility: hidden"></video>
+
 
     </article>
 </main>
 <!--main-->
 
+<style>
+    .canvasbox {
+        border-radius: 3px;
+        margin-right: 10px;
+        width: 450px;
+        height: 338px;
+        border-bottom: 3px solid #0063FF;
+        box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 4px 10px 0 #00000030;
+        background: #333;
+
+    }
+</style>
+
 <!-- Required -->
 <script src="webslides/static/js/webslides.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/handtrackjs/dist/handtrack.min.js"></script>
 
 <script>
 
@@ -319,9 +353,106 @@
     }
 
 
+    // SEE: https://codepen.io/victordibia/pen/RdWbEY
+    const video = document.getElementById("myvideo");
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+    let model = null;
+    let lastFace = null;
+    let lastOpen = null;
+    let lastClose = null;
+    let openCount = 0;
+    let closeCount = 0;
+    let closeDetected = false;
+    let openDetected = false;
     window.ws = new WebSlides();
+    const standbySlide = 6;
+    const videoSlide = 7;
 
-    const standbySlide = 4; // should be the last slide
+    const modelParams = {
+        flipHorizontal: true,   // flip e.g for video
+        maxNumBoxes: 20,        // maximum number of boxes to detect
+        iouThreshold: 0.5,      // ioU threshold for non-max suppression
+        scoreThreshold: 0.6,    // confidence threshold for predictions.
+    }
+
+
+    function runDetection() {
+        model.detect(video).then(predictions => {
+            for (p in predictions) {
+                if (predictions[p].label === "face") {
+                    if (lastFace === null || new Date() - lastFace > 60000) {
+                        window.ws.goToSlide(videoSlide);
+                    }
+                    lastFace = new Date();
+                }
+                if (predictions[p].label === "open") {
+                    if (new Date() - lastOpen > 3000) {
+                        openCount = 0;
+                    }
+                    lastOpen = new Date();
+                    openCount++;
+
+                    if (openCount > 4) {
+                        openDetected = true;
+                    }
+                }
+                if (predictions[p].label === "closed") {
+                    if (new Date() - lastClose > 3000) {
+                        closeCount = 0;
+                    }
+                    lastClose = new Date();
+
+                    if (openDetected) {
+                        closeCount++;
+                    }
+
+                    if (closeCount > 4) {
+                        closeDetected = true;
+                    }
+                }
+
+                if (new Date() - lastOpen > 6000) {
+                    openDetected = false;
+                    closeDetected = false;
+                    closeCount = 0;
+                    openCount = 0;
+                    lastOpen = null;
+                    lastClose = null;
+                    console.log("Resetting");
+                }
+
+                if (openDetected && closeDetected) {
+                    console.log("Open and close detected");
+                    openDetected = false;
+                    closeDetected = false;
+                    closeCount = 0;
+                    openCount = 0;
+                    lastOpen = null;
+                    lastClose = null;
+                    updateSlide();
+                }
+
+            }
+            model.renderPredictions(predictions, canvas, context, video);
+            requestAnimationFrame(runDetection);
+        });
+    }
+
+    handTrack.load(modelParams).then(lmodel => {
+        model = lmodel
+    });
+
+    handTrack.startVideo(video).then(function (status) {
+        console.log("video started", status);
+        if (status) {
+            console.log("Video started. Now tracking");
+            runDetection()
+        } else {
+            console.log("Please enable video");
+        }
+    });
+
 
     function checkValidTime() {
         // Check if valid time, otherwise go to standby
@@ -329,8 +460,6 @@
         var hours = d.getHours();
         var mins = d.getMinutes();
         var day = d.getDay();
-
-        return true;
 
         return day >= 0
             && day <= 6
@@ -350,7 +479,13 @@
         }
     }
 
-    setInterval(updateSlide, 10000);
+    function standby() {
+        if (!checkValidTime()) {
+            window.ws.goToSlide(standbySlide);
+        }
+    }
+
+    setInterval(standby, 30000);
 
 </script>
 

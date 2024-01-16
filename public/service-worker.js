@@ -21,6 +21,7 @@ self.addEventListener('install', function(event) {
         'webslides/static/images/eeg.jpg',
         'webslides/static/images/furhat.jpg',
         'webslides/static/images/gpu.png',
+        'webslides/static/images/hand.jpeg',
         'webslides/static/images/books.jpg',
         'webslides/static/images/makeblock.jpg',
         'webslides/static/images/Radlager.jpg',
