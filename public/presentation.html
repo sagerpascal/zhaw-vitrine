@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="manifest.json" />
 
     <!-- CLEAN MARKUP = GOOD KARMA.
       Hi source code lover,
@@ -27,10 +28,10 @@
           rel="stylesheet">
 
     <!-- CSS Base -->
-    <link rel="stylesheet" type='text/css' media='all' href="../webslides/static/css/webslides.css">
+    <link rel="stylesheet" type='text/css' media='all' href="webslides/static/css/webslides.css">
 
     <!-- Optional - CSS SVG Icons (Font Awesome) -->
-    <link rel="stylesheet" type="text/css" media="all" href="../webslides/static/css/svg-icons.css">
+    <link rel="stylesheet" type="text/css" media="all" href="webslides/static/css/svg-icons.css">
 
     <!-- SOCIAL CARDS (ADD YOUR INFO) -->
 
@@ -93,7 +94,7 @@
         <section class="fullscreen">
             <div class="card-30">
                 <figure>
-                    <img src="../webslides/static/images/furhat.jpg" alt="Furhat">
+                    <img src="webslides/static/images/furhat.jpg" alt="Furhat">
                     <figcaption>
                         <a href="https://furhatrobotics.com" title="Furhat Robotics">
                             <svg class="fa-camera">
@@ -126,7 +127,7 @@
         <section class="fullscreen">
             <div class="card-30">
                 <figure>
-                    <img src="../webslides/static/images/eeg.jpg" alt="EEG">
+                    <img src="webslides/static/images/eeg.jpg" alt="EEG">
                     <figcaption>
                         <a href="https://furhatrobotics.com" title="EEG Headset">
                             <svg class="fa-camera">
@@ -161,7 +162,7 @@
         <section class="fullscreen">
             <div class="card-30">
                 <figure>
-                    <img src="../webslides/static/images/dgx-a100.jpg" alt="gpu">
+                    <img src="webslides/static/images/dgx-a100.jpg" alt="gpu">
                     <figcaption>
                         <a href="https://furhatrobotics.com" title="Nvidia DGX A-100">
                             <svg class="fa-camera">
@@ -194,7 +195,7 @@
         <section class="fullscreen">
             <div class="card-30">
                 <figure>
-                    <img src="../webslides/static/images/wheel_bearing.jpg" alt="gpu">
+                    <img src="webslides/static/images/wheel_bearing.jpg" alt="gpu">
                     <figcaption>
                         <a href="https://furhatrobotics.com" title="Wheel Bearing">
                             <svg class="fa-camera">
@@ -227,7 +228,7 @@
         <section class="fullscreen">
             <div class="card-30">
                 <figure>
-                    <img src="../webslides/static/images/books.jpg" alt="book">
+                    <img src="webslides/static/images/books.jpg" alt="book">
                     <figcaption>
                         <a href="https://furhatrobotics.com" title="Book">
                             <svg class="fa-camera">
@@ -264,7 +265,7 @@
         <section class="fullscreen">
             <div class="card-30">
                 <figure>
-                    <img src="../webslides/static/images/makeblock.jpg" alt="book">
+                    <img src="webslides/static/images/makeblock.jpg" alt="book">
                     <figcaption>
                         <a href="https://furhatrobotics.com" title="MakeBlock Robot">
                             <svg class="fa-camera">
@@ -307,9 +308,17 @@
 <!--main-->
 
 <!-- Required -->
-<script src="../webslides/static/js/webslides.js"></script>
+<script src="webslides/static/js/webslides.js"></script>
 
 <script>
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('service-worker.js');
+        });
+    }
+
+
     window.ws = new WebSlides();
 
     const standbySlide = 4; // should be the last slide
@@ -346,7 +355,7 @@
 </script>
 
 <!-- OPTIONAL - svg-icons.js (fontastic.me - Font Awesome as svg icons) -->
-<script defer src="../webslides/static/js/svg-icons.js"></script>
+<script defer src="webslides/static/js/svg-icons.js"></script>
 
 </body>
 </html>
